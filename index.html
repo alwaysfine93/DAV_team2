@@ -320,7 +320,7 @@ function showSearch(){
   setActiveTab(1);
   $main.innerHTML=`<h1>분실물 조회하기</h1><form id="form-search" autocomplete="off">
     <label for="search-name">찾는 분실물 이름</label>
-    <input type="text" id="search-name" maxlength="20" placeholder="예) 볼펜, 교과서 / 비워두면 전체 조회">
+    <input type="text" id="search-name" maxlength="20" placeholder="예) 볼펜, 교과서">
     <button class="btn" type="submit">분실물 조회하기</button></form>
     <div id="search-msg" role="status"></div><div id="search-result"></div><div id="search-pages"></div>`;
   const form=document.getElementById('form-search'), msg=document.getElementById('search-msg');
@@ -342,8 +342,19 @@ function showSearch(){
       }
     } catch(error){if(form.isConnected && current===generation)message(msg,error.message,'err');}
   }
-  form.onsubmit=e=>{e.preventDefault();query=form.querySelector('#search-name').value.trim();load(1);};
-  load(1);
+  form.onsubmit=e=>{
+    e.preventDefault();
+    query=form.querySelector('#search-name').value.trim();
+    if(!query){
+      generation++;
+      results.textContent='';pages.textContent='';
+      message(msg,'찾는 분실물 이름을 입력해 주세요.','err');
+      form.querySelector('#search-name').focus();
+      return;
+    }
+    load(1);
+  };
+  message(msg,'찾는 분실물 이름을 입력한 뒤 조회해 주세요.');
 }
 function showJudge(item){
   setActiveTab(2);
@@ -376,3 +387,4 @@ showRegister();
 </script>
 </body>
 </html>
+
