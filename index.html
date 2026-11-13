@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>분실물 찾기·등록 웹앱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #f6f9fb;
+      font-family: 'Noto Sans KR', sans-serif;
+      margin: 0;
+      color: #212735;
+    }
+    .container {
+      max-width: 420px;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 2px 16px #cde2ff30;
+      padding: 30px 18px 24px 18px;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    h1 {
+      margin: 0 0 18px 0;
+      font-size: 1.5em;
+      font-weight: 700;
+      border-bottom: 2px solid #e6ecf5;
+      padding-bottom: 10px;
+      letter-spacing: -1px;
+    }
+    label {
+      margin: 13px 0 5px;
+      font-weight: 500;
+      display: block;
+    }
+    input[type="text"], input[type="file"], input[type="number"], textarea {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 1em;
+      border: 1.5px solid #bad6ff;
+      border-radius: 7px;
+      background: #f7fbff;
+      padding: 10px;
+      margin-bottom: 2px;
+      margin-top: 2px;
+      outline: none;
+      transition: border .2s;
+      resize: none;
+    }
+    input[type="text"]:focus, textarea:focus {
+      border-color: #3887e3;
+      background: #eef6ff
+    }
+    textarea {
+      min-height: 40px;
+      max-height: 100px;
+    }
+    .btn {
+      margin: 18px 0 0 0;
+      display: block;
+      width: 100%;
+      font-size: 1.1em;
+      background: #2366ea;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      padding: 12px 0;
+      border-radius: 8px;
+      box-shadow: 0 1.5px 4px #c5dafb5b;
+      cursor: pointer;
+      transition: background .2s;
+      letter-spacing: .5px;
+    }
+    .btn:active, .btn:focus { background: #1656c7; }
+    .row-btns {
+      display: flex;
+      gap: 16px;
+      justify-content: stretch;
+      margin-top: 12px;
+    }
+    .row-btns button {
+      flex: 1 1 0;
+    }
+    .preview-img {
+      display: block;
+      width: 140px; height: 85px;
+      object-fit: cover;
+      border: 1.5px solid #b4cbe8;
+      border-radius: 7px;
+      background: #f7fafc;
+      margin: 10px auto;
+    }
+    .img-ph {
+      width: 140px; height: 85px;
+      display:flex;justify-content:center;align-items:center;
+      font-size: 1em;color:#8a97b3;
+      border: 1.5px dashed #b4cbe8;
+      border-radius:7px;
+      background: #f5f8fc;
+      margin: 14px auto;
+      text-align:center;
+      letter-spacing:1px;
+    }
+    .item-list {
+      margin: 14px 0 7px 0;
+      background: #f7faff;
+      border-radius: 10px;
+      padding: 9px 11px;
+      box-shadow: 0 1px 6px #d5e5fb20;
+    }
+    .item-card {
+      margin: 12px 0 18px 0;
+      border:1px solid #d8e8fc;
+      border-radius:8px;
+      padding:13px 13px 7px;
+      background: #fbfdff;
+      box-shadow: 0 1px 5px #d5eefa15;
+      display: flex;gap:12px;align-items:flex-start;
+      flex-wrap: wrap;
+    }
+    .item-card-info {
+      flex: 1 1 0;
+    }
+    .item-small {
+      font-size: 0.98em;
+      color: #6c7dae;
+      margin-bottom: 7px;
+    }
+    .step-indicator {
+      margin-bottom: 21px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .step-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: #e1e9fa;
+    }
+    .step-dot.active {background:#2366ea;}
+    .nav-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 8px;
+      margin-bottom: 28px;
+    }
+    .nav-btn {
+      background: #eef5ff;
+      color: #2366ea;
+      border: none;
+      border-radius: 14px;
+      padding: 8px 19px;
+      font-weight: 600;
+      margin: 0 2px;
+      font-size: 1em;
+      transition: background .18s;
+      cursor: pointer;
+    }
+    .nav-btn.active, .nav-btn:focus { background: #2366ea; color: #fff; }
+    .notice {
+      background: #f1f7ffbe;
+      color: #176bc7;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 19px 3px 11px 3px;
+      font-size: 1.00em;
+      box-shadow: 0 1px 5px #d7ceed13;
+    }
+    .msg {
+      background: #f6f8fd;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #bad7f83b;
+      color:#204083;
+      margin: 8px auto 16px auto;
+      max-width: 300px;
+      box-shadow: 0 1px 7px #bfc9f015;
+      font-weight: 500;
+      font-size: 1.09em;
+      text-align:center;
+    }
+    .err {
+      background: #ffeded;
+      color: #c81b36;
+      border: 1.2px solid #ffb3b3;
+    }
+    .success {
+      background: #f3fff3;
+      color: #287e2d;
+      border: 1.2px solid #97ffb3;
+    }
+    @media (max-width:570px) {
+      .container {max-width:97vw;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-bar">
+      <button class="nav-btn active" id="nav-register">분실물 등록</button>
+      <button class="nav-btn" id="nav-search">분실물 조회</button>
+      <button class="nav-btn" id="nav-judge">분실물 주인 판별</button>
+    </div>
+    <div id="main-area"></div>
+  </div>
+
+  <script>
+  // --- 데이터(공유 저장X, 현재 브라우저만, localStorage) ---
+
+  // 학생명단(초기값)
+  const STUDENT_LIST = [
+    ["10101", "홍길동"],
+    ["10102", "김철수"],
+    ["10103", "이영희"]
+  ];
+
+  function loadStudentList(){
+    // 브라우저에 커스텀 학생이 저장돼 있으면 그걸 쓴다(수정 확장 대비)
+    let arr;
+    try{ 
+      arr = JSON.parse(localStorage.getItem('student_list')); 
+      if(!Array.isArray(arr) || !arr[0]) throw 1;
+      return arr;
+    }catch{ return STUDENT_LIST; }
+  }
+  function saveStudentList(arr){
+    try{
+      localStorage.setItem('student_list', JSON.stringify(arr));
+    }catch{ }
+  }
+
+  // 분실물 게시판(게시글 배열)
+  function loadLostItems(){
+    try{
+      let arr = JSON.parse(localStorage.getItem('lost_item_board'));
+      if(!Array.isArray(arr)) throw 1;
+      return arr;
+    }catch{
+      // 초기 예시 데이터
+      return [
+        {'이름': '파란색 볼펜', '사진': '', '특징': '이름표 붙어 있음', '발견장소': '1층 복도'},
+        {'이름': '물통', '사진': '', '특징': '핑크색, 이니셜 K.M.', '발견장소': '교실 책상 위'},
+        {'이름': '과학 교과서', '사진': '', '특징': '표지에 낙서가 있음', '발견장소': '2층 계단'}
+      ];
+    }
+  }
+  function saveLostItems(arr){
+    try{
+      localStorage.setItem('lost_item_board', JSON.stringify(arr));
+      return true;
+    }catch{
+      alert('⚠️ 데이터 저장공간이 부족하거나, 브라우저 정책으로 저장이 차단됐습니다.\n임시로만 사용됩니다.');
+      window._temp_lost_items = arr; // 임시 메모리
+      return false;
+    }
+  }
+
+  // *** 상태 ***
+  let lost_items = loadLostItems();
+  let student_list = loadStudentList();
+
+  // ==========  UI ==========
+  const $main = document.getElementById('main-area');
+
+  function setActiveTab(idx){
+    document.querySelectorAll('.nav-btn').forEach(($b,i)=>{
+      $b.classList.toggle('active', i===idx);
+    });
+  }
+  // ---- 화면 이동 ----
+  function showRegister(){ setActiveTab(0); renderRegister(); }
+  function showSearch(){ setActiveTab(1); renderSearch(); }
+  function showJudge(initData){ setActiveTab(2); renderJudge(initData || null); }
+
+  // ========== [F1] 등록 화면 ==========
+  function renderRegister(){
+    $main.innerHTML =
+    `<h1>분실물 등록하기</h1>
+      <form id="form-register" autocomplete="off">
+      <label for="fimg">분실물 사진</label>
+      <input type="file" accept="image/*" id="fimg" name="사진" />
+      <div class="img-ph" id="preview-ph">사진이 첨부되지 않았어요</div>
+
+      <label for="fname">분실물 이름</label>
+      <input type="text" id="fname" name="이름" maxlength="20" required placeholder="예) 파란색 볼펜" autocomplete="off" />
+
+      <label for="fplace">분실물을 찾은 장소</label>
+      <input type="text" id="fplace" name="발견장소" maxlength="25" required placeholder="예) 1층 복도" autocomplete="off" />
+
+      <label for="ffeat">분실물 특징</label>
+      <textarea id="ffeat" name="특징" maxlength="40" required placeholder="예) 이름표가 붙어 있음"></textarea>
+
+      <button class="btn" type="submit">게시물 올리기</button>
+      </form>
+      <div id="register-msg"></div>
+    `;
+
+    // 사진 업로드 프리뷰
+    const $imgIn = document.getElementById('fimg');
+    const $preview = document.getElementById('preview-ph');
+    $imgIn.onchange = function(){
+      if($imgIn.files && $imgIn.files[0]){
+        const file = $imgIn.files[0];
+        const reader = new FileReader();
+        reader.onload = e => {
+          $preview.innerHTML = `<img src="${e.target.result}" class="preview-img" alt="첨부된 이미지" />`;
+          $preview.dataset.imgData = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }else{
+        $preview.innerHTML = '사진이 첨부되지 않았어요';
+        delete $preview.dataset.imgData;
+      }
+    };
+
+    document.getElementById('form-register').onsubmit = function(e){
+      e.preventDefault();
+
+      // 입력값 체크
+      const name = document.getElementById('fname').value.trim();
+      const place = document.getElementById('fplace').value.trim();
+      const feat = document.getElementById('ffeat').value.trim();
+
+      let photo_url = $preview.dataset.imgData || '';
+
+      if(!name || !feat || !place){
+        showMsg('register-msg','모든 필드를 입력해 주세요.','err');return;
+      }
+
+      // 게시글 객체 만들기 (파이썬과 똑같은 key)
+      const item = {'사진': photo_url, '이름': name, '특징': feat, '발견장소': place};
+
+      // 배열에 push → 저장 (최신글 맨 뒤)
+      lost_items.push(item);
+      let ok = saveLostItems(lost_items);
+
+      // 최신 1개 프리뷰
+      showMsg('register-msg',
+        `<div class="success">분실물이 등록되었습니다.</div>
+        <div class="item-card">
+          <div>${photo_url?`<img src="${photo_url}" style="width:90px;height:60px;object-fit:cover;border:1px solid #b4cbe8;border-radius:5px;">`:
+          `<div class="img-ph" style="width:90px;height:60px;">사진 없음</div>`}</div>
+          <div class="item-card-info">
+            <div class="item-small"><b>이름:</b> ${name}</div>
+            <div class="item-small"><b>특징:</b> ${feat}</div>
+            <div class="item-small"><b>발견 장소:</b> ${place}</div>
+          </div>
+        </div>
+        <button class="btn" onclick="showSearch()">[F2] 분실물 조회로 가기</button>`
+      );
+      this.reset();
+      $preview.innerHTML='사진이 첨부되지 않았어요';
+      delete $preview.dataset.imgData;
+    }
+  }
+
+  // ========== [F2] 조회 화면 ==========
+  function renderSearch(){
+    $main.innerHTML =
+    `<h1>분실물 조회하기</h1>
+      <form id="form-search" autocomplete="off">
+        <label for="search-name">찾는 분실물 이름</label>
+        <input type="text" id="search-name" maxlength="20" required placeholder="예) 볼펜, 교과서" autocomplete="off"/>
+        <button class="btn" type="submit">분실물 조회하기</button>
+      </form>
+      <div id="search-result"></div>
+      <div id="search-msg"></div>
+    `;
+
+    document.getElementById('form-search').onsubmit = function(e){
+      e.preventDefault();
+      const searchName = document.getElementById('search-name').value.trim();
+      if(!searchName){
+        showMsg('search-msg','검색어를 입력하세요.','err');return;
+      }
+      // 규칙: 이름에 검색어 포함된 분실물 모두 출력(부분일치)
+      const found = lost_items.filter(x=>x['이름'].includes(searchName));
+      if(!found.length){
+        showMsg('search-result','<div class="msg err">분실물을 찾을 수 없습니다.</div>'); return;
+      }
+      // 여러 개면 모두 리스트로, 각 항목에 예/아니오 질문(=판별 이동)
+      let html = '';
+      found.forEach((item, idx)=>{
+        html += `
+        <div class="item-card">
+          <div>
+            ${item['사진']? `<img src="${item['사진']}" style="width:90px;height:60px;object-fit:cover;border-radius:5px;border:1px solid #bad6ff;">`
+            :'<div class="img-ph" style="width:90px;height:60px;">사진 없음</div>'}
+          </div>
+          <div class="item-card-info">
+            <div class="item-small"><b>이름:</b> ${item['이름']}</div>
+            <div class="item-small"><b>특징:</b> ${item['특징']}</div>
+            <div class="item-small"><b>발견 장소:</b> ${item['발견장소']}</div>
+          </div>
+        </div>
+        <div style="text-align:center;" class="msg">
+          이 분실물이 당신의 분실물이 맞나요?
+          <div class="row-btns" style="margin-top:9px;">
+            <button class="btn" type="button"
+              onclick='showJudge(${JSON.stringify(item)})'>예</button>
+            <button class="btn" type="button"
+              onclick="showMsg('search-msg','분실물 찾기가 취소되었습니다.','err')">아니오</button>
+          </div>
+        </div>
+        <hr style="margin:16px 0 12px 0;border:0;border-top:1.2px dashed #e0eefa;">`;
+      });
+      showMsg('search-result',html);
+    }
+  }
+
+  // ========== [F3] 판별 화면 ==========
+  function renderJudge(item){
+    $main.innerHTML =
+    `<h1>분실물 주인 판별</h1>
+     <div style="margin-bottom:7px;text-align:center;">
+       ${item && item['사진'] ? `<img src="${item['사진']}" class="preview-img" alt="사진">` : `<div class="img-ph">사진 없음</div>`}
+     </div>
+     ${item?
+        `<div class="item-card-info" style="margin-bottom:12px;">
+            <div class="item-small"><b>이름:</b> ${item['이름']}</div>
+            <div class="item-small"><b>특징:</b> ${item['특징']}</div>
+            <div class="item-small"><b>발견 장소:</b> ${item['발견장소']}</div>
+        </div>`
+        : ''
+      }
+      <form id="form-judge" autocomplete="off">
+        <label>학번</label>
+        <input type="text" id="judge-id" maxlength="8" required placeholder="학번을 입력하세요" autocomplete="off"/>
+        <label>이름</label>
+        <input type="text" id="judge-name" maxlength="10" required placeholder="이름을 입력하세요" autocomplete="off"/>
+        <button class="btn" type="submit">확인</button>
+      </form>
+      <div id="judge-msg"></div>
+      <div class="notice" style="margin-top:13px;">
+        실제 학생 및 소유주가 맞는지 확인 후,\n교무실에서 분실물을 찾아주세요.
+      </div>
+    `;
+
+    // 판별 처리: 학생 명단에 일치하는지
+    document.getElementById('form-judge').onsubmit = function(e){
+      e.preventDefault();
+      const id = document.getElementById('judge-id').value.trim();
+      const name = document.getElementById('judge-name').value.trim();
+      if(!id || !name){
+        showMsg('judge-msg','모든 정보를 입력하세요.','err'); return;
+      }
+      // 파이썬: if (student_id, name) in student_list
+      let ok = student_list.some(x=>x[0]===id && x[1]===name);
+      if(ok){
+        showMsg('judge-msg',
+          `<div class="msg success">분실물 주인 찾기 완료!<br>일주일 안에 교무실에 와서 분실물을 찾아가세요.</div>`);
+      }else{
+        showMsg('judge-msg','<div class="msg err">해당 학번과 이름이 학생 명단에 없습니다.</div>');
+      }
+    }
+  }
+
+  // ========= 메시지/공통 함수 =========
+  function showMsg(containerId, html, cls){
+    const $e = document.getElementById(containerId);
+    $e.innerHTML = html;
+    $e.className = (cls?'msg '+cls:'');
+  }
+
+  // ====== 탭/화면 전환 연결 ======
+  document.getElementById('nav-register').onclick = showRegister;
+  document.getElementById('nav-search').onclick = showSearch;
+  document.getElementById('nav-judge').onclick = ()=>showJudge(null);
+
+  // ====== 앱 시작 =========
+  showRegister();
+
+  // [추후 서버/구글드라이브 연동 시 저장 필요 데이터]
+  /*
+    1) 분실물 게시판 전체(lost_items)
+    2) 등록 학생 명단(student_list)
+      (모두 localStorage에 JSON형태이며, 추후 별도 백업 필요)
+  */
+  </script>
+</body>
+</html>
