@@ -341,8 +341,11 @@
       const item = normalizeItem(rawItem);
       if (!item) return "";
 
+      const photoSrc = item.photoUrl || (item.photoFileId && item.id ? "/api/lost-items?photo=" + encodeURIComponent(item.id) : "");
       return `<article class="item-card">
-        <div class="img-ph" aria-label="사진은 현재 연결되지 않음">사진 없음</div>
+        ${photoSrc
+          ? `<img class="preview-img" src="${esc(photoSrc)}" alt="${esc(item.name)} 사진" onerror="this.replaceWith(document.createTextNode('사진을 불러오지 못했습니다'))">`
+          : '<div class="img-ph">사진 없음</div>'}
         <div class="item-card-info">
           <div class="item-small"><b>이름:</b> ${esc(item.name)}</div>
           <div class="item-small"><b>특징:</b> ${esc(item.features)}</div>
