@@ -257,20 +257,7 @@
       { id: "10304", name: "김동건" },
       { id: "10323", name: "조영웅" },
       { id: "10101", name: "김효민" },
-      { id: "10102", name: "김유빈" },
-
-      // 아래 10명은 요청에 따라 추가한 가상 테스트 자료입니다.
-      // 실제 학생 명단으로 사용하지 마세요.
-      { id: "10411", name: "가상학생01" },
-      { id: "10412", name: "가상학생02" },
-      { id: "10413", name: "가상학생03" },
-      { id: "10414", name: "가상학생04" },
-      { id: "10415", name: "가상학생05" },
-      { id: "10416", name: "가상학생06" },
-      { id: "10417", name: "가상학생07" },
-      { id: "10418", name: "가상학생08" },
-      { id: "10419", name: "가상학생09" },
-      { id: "10420", name: "가상학생10" }
+      { id: "10102", name: "김유빈" }
     ];
 
     const INITIAL_ITEMS = [
@@ -756,29 +743,6 @@
       );
     }
 
-    function isTestStudent(id, name) {
-      const normalizedId = id.trim();
-      const normalizedName = name.trim().normalize("NFC");
-
-      return TEST_STUDENTS.some(student =>
-        student.id === normalizedId &&
-        student.name.normalize("NFC") === normalizedName
-      );
-    }
-
-    const TEST_STUDENTS = [
-      { id: "10411", name: "가상학생01" },
-      { id: "10412", name: "가상학생02" },
-      { id: "10413", name: "가상학생03" },
-      { id: "10414", name: "가상학생04" },
-      { id: "10415", name: "가상학생05" },
-      { id: "10416", name: "가상학생06" },
-      { id: "10417", name: "가상학생07" },
-      { id: "10418", name: "가상학생08" },
-      { id: "10419", name: "가상학생09" },
-      { id: "10420", name: "가상학생10" }
-    ];
-
     function showJudge(item) {
       setActiveTab(2);
       $main.innerHTML = `
@@ -795,11 +759,9 @@
         </form>
         <div id="judge-msg" role="status" aria-live="polite"></div>
         <div class="notice">
-          학생 명단 서버에 입력한 학번과 이름을 확인합니다. 가상 테스트 학생은 실제 명단에 등록된 학생이 아닙니다. 분실물의 실제 소유 여부는 교무실에서 확인해 주세요.
+          입력한 학번과 이름이 학생 명단 DB에 등록되어 있는지 확인합니다.
+          분실물의 실제 소유 여부는 교무실에서 확인해 주세요.
         </div>
-        <p class="small-note">
-          테스트용 가상 학생: 10411~10420 / 가상학생01~가상학생10
-        </p>
       `;
 
       const form = document.getElementById("form-judge");
@@ -839,23 +801,13 @@
             throw new Error("학생 명단 응답 형식이 올바르지 않습니다.");
           }
 
-          const testStudent = isTestStudent(id, name);
-
-          if (result.matched && testStudent) {
-            message(
-              msg,
-              "서버 명단 확인 완료입니다. 입력한 정보는 가상 테스트 학생 자료이므로 실제 학생 확인 결과로 사용하지 마세요.",
-              "success"
-            );
-          } else {
-            message(
-              msg,
-              result.matched
-                ? "학생 명단 확인 완료! 교무실에서 실제 소유 여부를 확인해 주세요."
-                : "해당 학번과 이름이 학생 명단에 없습니다.",
-              result.matched ? "success" : "err"
-            );
-          }
+          message(
+            msg,
+            result.matched
+              ? "학생 명단 확인 완료! 교무실에서 실제 소유 여부를 확인해 주세요."
+              : "해당 학번과 이름이 학생 명단에 없습니다.",
+            result.matched ? "success" : "err"
+          );
         } catch (error) {
           if (!form.isConnected) return;
 
@@ -866,14 +818,12 @@
               "제공된 학생명단.xlsx 자료에서 확인했습니다. 교무실에서 실제 소유 여부를 확인해 주세요. 서버 연결은 되지 않았습니다.",
               "success"
             );
-          } else if (isTestStudent(id, name)) {
+          } else {
             message(
               msg,
-              "입력 정보는 가상 테스트 학생 자료와 일치하지만, 서버 연결이 없어 실제 명단 등록 여부는 확인하지 못했습니다.",
+              error.message || "학생 명단 서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
               "err"
             );
-          } else {
-            message(msg, error.message, "err");
           }
         } finally {
           if (form.isConnected) {
